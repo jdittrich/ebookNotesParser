@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
 
-  <title>Title</title>
+  <title>View ebook notes</title>
   <meta name="description" content="webapp to show ebook reader notes">
   <meta name="author" content="">
 
@@ -19,6 +19,11 @@
         border: 1px solid #aaa;
         background: #eee;
      }
+
+     .interactiveElement input[type=checkbox]{
+        position: relative;
+        top: 0.15em;
+     }
      
     #tableContainer.dontSelect td:nth-of-type(1),
     #tableContainer.dontSelect td:nth-of-type(2),
@@ -32,12 +37,12 @@
 </head>
 
 <body>
-  <div class="interactiveElement"><label>Block selection of anything than page and note content  <input type="checkbox" id="selectBlock" name="selectBlockToggle" value="true"></label></div>
+  <div class="interactiveElement"><label title="useful if you want to paste notes somewhere and do not need title, type and date">Block selection of anything than page and note content  <input type="checkbox" id="selectBlock" name="selectBlockToggle" value="true"></label></div>
   <div id="tableContainer">
 
   </div>
   <div class="interactiveElement">
-    <label>Select or Drop the file with your ebook reader notes
+    <label title="If you attach your reader and it appears as mass storage device, the file with the annotations is usually in the device’s root folder and is called `notes.txt` or `kindleMyClippings.txt`. ">Select or Drop the file with your ebook reader notes
       <input 
         style="display:block" 
         type="file" 
