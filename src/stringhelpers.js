@@ -9,8 +9,20 @@ export function trim(stringToTrim){
 
 export function trimLinesInArray(arrayOfStrings){
     var noBreaksNotesArray =  arrayOfStrings.map(function(value){
-        return value.trim(value);//TODO: a whole library for this… Bad. Fix with something else.
+        return value.trim(value);
       })
   
       return noBreaksNotesArray;
+}
+
+export function removeEmptyLinesInArray(arrayOfStrings) {
+    let cleanedArray = []
+    arrayOfStrings.forEach(function (value) {
+        if(typeof value != "string"){return}
+        if(value==""){return}
+        if(value.match(/^\r|\n$/)){return}
+        cleanedArray.push(value);
+    })
+
+    return cleanedArray;
 }

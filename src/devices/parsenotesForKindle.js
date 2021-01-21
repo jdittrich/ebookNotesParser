@@ -1,33 +1,61 @@
 
-
     import {
       trim,
-      trimLinesInArray
+      trimLinesInArray,
+      removeEmptyLinesInArray
     } from "../stringhelpers.js"
 
 function splitIntoNotes(completeString){
-  const notesStringArray = notesstring.split(/^={4,}\n/mu); //split big text into parts, each containing a note
+  const notesStringArray = completeString.split(/^={4,}/mu); //split big text into parts, each containing a note
   return notesStringArray
 }
 
-function extractDate(note){}
-
-function extractType(note){
-  
+function extractTitle(note){
+  //title is the first line
+  const noteLineSplitArray = note.split("\n");
+  const title = noteLineSplitArray[0];
+  return title; 
 }
 
 
+function extractDate(note){
+  //date is at the end of the 2nd line
+  const noteLineSplitArray = note.split("\n");
+  const dateMatches = /(\d{1,2}). (\w+) (\d\d\d\d) (\d\d:\d\d:\d\d)/.exec(noteLineSplitArray[1]) //first line
+  const date = dateMatches[3] + "-" + dateMatches[2] + "-" + dateMatches[1] + " " + dateMatches[4];
+  return date; 
+}
+
+function extractType(note){
+  const noteLineSplitArray = note.split("\n");
+  const type = /- \w+\s*(\w+)/.exec(noteLineSplitArray[1])[1]
+  return type;
+}
+
+function extractPage(note) {
+  const noteLineSplitArray = note.split("\n");
+  let page = noteLineSplitArray[1].match(/\d+-?\d*/u);
+  return page;
+}
+
+function extractContent(note) {
+  const noteLineSplitArray = note.split("\n");
+  const noLinebreaksArray = removeEmptyLinesInArray(noteLineSplitArray);
+  let content = ""
+  if (noLinebreaksArray.length>2){
+    content = noLinebreaksArray.slice(2).join(":")
+  }   
+  return content;
+}
 
 function notesparseKindle(notesstring){
       //Kindle notes have either highlight OR note saved they don't do both. 
-      notesStringArrayUntrimmed = splitIntoNotes(notesstring);      
+      const notesStringArrayUntrimmed = splitIntoNotes(notesstring);      
+    
       
-
-      // var notesStringArray = trimEmptyNoteLines(notesStringArray);//get rid of empty lines
+      const  notesStringArray = trimLinesInArray(notesStringArrayUntrimmed); //get rid of empty lines
       
-      var notesStringArray = trimLinesInArray(notesStringArray); //get rid of empty lines
-      
-      var structuredNotes = [];// to store structured notes
+      let structuredNotes = [];// to store structured notes
       
 
         //iterate through the notes
@@ -36,33 +64,14 @@ function notesparseKindle(notesstring){
           if(notesStringArray[i].length < 1){break;}
           
           let currentNoteString = notesStringArray[i]
-          let noteLineSplitArray = currentNoteString.split("\n");// create array of single lines
-          let currentNote={};
-  
-          currentNote.title = noteLineSplitArray[0];
-          let dateMatches = /(\d{1,2}). (\w+) (\d\d\d\d) (\d\d:\d\d:\d\d)/.exec(noteLineSplitArray[1]) //first line
-          
-          //possibly replace month-names with numbers?
 
-                  /*
-          Split line 1 along the |
-          If length of resulting array = 3: There is PAGE (0th element) and POSTION (1st element). Text of first is … auf Seite, Text of second is bei Position… 
-          If lenth of resulting array = 2 There is only POSITION (0th element) and Text is "Bei Position"
-         */
-
-          currentNote.date = dateMatches[3] + "-" + dateMatches[2] + "-" + dateMatches[1] + " " +dateMatches[4]+":"+dateMatches[5];
+          let currentNote = {}
+          currentNote.title = extractTitle(currentNoteString);
+          currentNote.date = extractDate(currentNoteString);
+          currentNote.type = extractType(currentNoteString);
+          currentNote.page = extractPage(currentNoteString);
+          currentNote.content = extractContent(currentNoteString);
           
-          //TODO: does not work yet:  
-          currentNote.type = noteLineSplitArray[1].match(/– \w+/u)[0];
-          
-          
-          let page = noteLineSplitArray[1].match(/\d+-?\d*/u);
-          if (page.length !== undefined){
-            currentNote.page = parseInt(page[0])
-          }
-          currentNote.content = getNoteContentKindle(currentNoteString);
-          
-  
           structuredNotes.push(currentNote);
           
         }
@@ -70,19 +79,5 @@ function notesparseKindle(notesstring){
         return structuredNotes;
     };
 
-
-    //WORK IN PROGRESS; COPIED FROM TOLINO VERSION
-    function getNoteContentKindle(note) {
-      var noteLineSplitArray = note.split("\n");
-      var contentlines = noteLineSplitArray.slice(2); //remove first two lines
-
-      if (contentlines.length>0) { //if first line in array contains an ":", execute if
-        var content = contentlines.join(" – ");
-      } else {
-        content = "NOT FOUND"
-      }
-
-      return content
-    }
-	
 export default notesparseKindle
+export {splitIntoNotes, extractContent, extractDate, extractPage, extractTitle, extractType}
