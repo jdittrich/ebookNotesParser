@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Mocha Tests</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../libs/mocha.css" />
+  </head>
+  <body>
+    <div id="mocha"></div>
+
+    <script src="../libs/chai.js"></script>
+    <script src="../libs/mocha.js"></script>
+
+
+    <script class="mocha-init">
+      mocha.setup('bdd');
+      mocha.checkLeaks();
+      
+    </script>
+    <script src="tests.js" type="module"></script>
+    <script src="kindlePaperwhite2Tests.js" type="module"></script>
+    <script class="mocha-exec" type="module">
+      mocha.run();
+    </script>
+  </body>
+</html>
