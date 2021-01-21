@@ -1,7 +1,7 @@
 /**
 * 
 * @param {object[]} table
-* @param {string} table[].   - title of the ebook
+* @param {string} table[].title   - title of the ebook
 * @param {string} table[].date - when the note was made
 * @param {string} table[].page – page the note was made on
 * @param {string} table[].type – type of the note (e.g. selection, note, bookmark…)
