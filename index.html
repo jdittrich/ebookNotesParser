@@ -1,0 +1,110 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>Title</title>
+  <meta name="description" content="webapp to show ebook reader notes">
+  <meta name="author" content="">
+
+  <style>
+    body {font-family: sans-serif}
+    table {margin-bottom:3em}
+    table th {background:#ddd}
+    table td {vertical-align: top;}
+    .fileselectorContainer{
+        margin-top:1em; 
+        padding:0.3em;
+        border: 1px solid #aaa;
+        background: #eee;
+     }
+     
+    #tableContainer.dontSelect td:nth-of-type(1)
+    #tableContainer.dontSelect td:nth-of-type(2)
+    #tableContainer.dontSelect td:nth-of-type(3){
+        user-select:none
+    }
+    
+  </style>
+
+</head>
+
+<body>
+  <div><label>Block selection of anything than page and note content  <input type="checkbox" id="selectBlock" name="selectBlockToggle" value="true"></label>
+  <div id="tableContainer">
+
+  </div>
+  <div class="fileselectorContainer">
+    <label>Select or Drop the file with your ebook reader notes
+      <input 
+        style="display:block" 
+        type="file" 
+        id="fileselector">
+    </label>
+    <small>(currently only tolino/rakuten) </small>
+  </div>
+
+  <script type="module">
+   import parsenotes from './src/parsenotes.js'
+   import buildDomTable from './src/buildTable.js'
+   
+   const idTableContainer = "tableContainer";
+   const idFileSelector = "fileselector";
+   const idSelectBlockCheckbox = "selectBlock"
+   const ClassSelectBlockOnTable ="dontSelect"
+   
+   const fileselector = document.getElementById(idFileSelector).addEventListener("change",handleChange);
+   
+   const checkbox = document.getElementById(idSelectBlockCheckbox);
+   checkbox.addEventListener("change",function(){
+        if(checkbox.checked){
+            document.getElementById(idTableContainer).classList.add(ClassSelectBlockOnTable);
+        } else {
+            document.getElementById(idTableContainer).classList.remove(ClassSelectBlockOnTable);
+        }
+     });
+    
+   function handleChange(evt){
+    var that = this;
+      if (evt.target.files === undefined) {
+        return
+      }
+      if (!evt.target.files[0].type.match('text.*')) {
+        console.log("not a text file");
+        return;
+      }
+      var reader = new FileReader();
+      reader.readAsText(evt.target.files[0]);
+      reader.onload = function (event) {
+        that.tabledata = null;
+        that.parseerror = null;
+
+        var notes = parsenotes(event.target.result);
+        // maybe return an object holding: table, type, error? 
+        // if there is error, we can display an…error. 
+        // If all is fine, we can get richer infos etc. 
+        if (notes.error) {
+          showError(notes.error);
+        } else {
+          showTable(notes.result);
+        }
+      }
+   }
+
+   function showError(){ 
+     console.log("error")
+   }
+
+   function showTable(table){
+    const domTableContainer=document.getElementById(idTableContainer);
+    const domTable = buildDomTable(table);
+    domTableContainer.appendChild(domTable);   
+   }
+   
+
+   
+   
+  </script>
+</body>
+</html>
